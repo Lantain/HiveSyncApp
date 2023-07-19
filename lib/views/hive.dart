@@ -1,17 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:hive_sync_app/components/hive_brief_cards.dart';
+import 'package:hive_sync_app/components/records_list.dart';
+import 'package:hive_sync_app/data/mock/hive.dart';
 import 'package:hive_sync_app/data/model.dart';
 
 Future<Hive> fetchHive(hiveId) async {
   await Future.delayed(const Duration(seconds: 1));
-  final rng = Random();
-  return Hive(
-      "ID: $hiveId",
-      DateTime.now()
-          .subtract(const Duration(minutes: 11))
-          .millisecondsSinceEpoch,
-      [Record(10, rng.nextDouble() * 100, null), Record(20, null, null)]);
+  return generateHive("sample");
 }
 
 class HivePage extends StatefulWidget {
@@ -24,6 +19,7 @@ class HivePage extends StatefulWidget {
 
 class _HivePage extends State<HivePage> {
   late Future<Hive> futureHive;
+  String? hiveName;
 
   @override
   void initState() {
@@ -34,21 +30,46 @@ class _HivePage extends State<HivePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Le HIVE"),
-        ),
-        body: Center(
-          child: FutureBuilder<Hive>(
-            future: futureHive,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text('HIVE: ${snapshot.data?.name}');
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-              return const CircularProgressIndicator();
-            },
-          ),
-        ));
+      appBar: AppBar(
+        title:
+            hiveName != null ? Text(hiveName!) : const Text("Loading hive..."),
+      ),
+      body: FutureBuilder<Hive>(
+        future: futureHive,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final lsa =
+                DateTime.fromMillisecondsSinceEpoch(snapshot.data!.lastSeenAt);
+
+            Future.delayed(Duration.zero, () {
+              setState(() {
+                hiveName = snapshot.data?.name;
+              });
+            });
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(snapshot.data!.id),
+                      Text("Last Seen at $lsa"),
+                    ],
+                  ),
+                ),
+                HiveBriefCards(hive: snapshot.data!),
+                RecordsList(records: snapshot.data!.records)
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+    );
   }
 }

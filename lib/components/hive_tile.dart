@@ -43,8 +43,8 @@ class HiveTile extends StatelessWidget {
                         : const Text(
                             style: TextStyle(color: Colors.redAccent),
                             "offline"),
-                    Text(
-                        "Temp: ${record.temperature?.toStringAsFixed(1)}C, Hum: ${record.humidity?.toStringAsFixed(1)}%"),
+                    Text("Temp: ${record.temperature?.toStringAsFixed(1)}C"),
+                    Text("Hum: ${record.humidity?.toStringAsFixed(1)}%"),
                     const Text("$kilos kg"),
                     const Spacer(),
                   ]),

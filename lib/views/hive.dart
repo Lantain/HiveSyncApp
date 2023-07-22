@@ -20,7 +20,7 @@ class RecordsHeaderDelegate extends SliverPersistentHeaderDelegate {
   Widget build(context, double shrinkOffset, bool overlapsContent) {
     return Container(
         color: Colors.orange.shade50,
-        padding: EdgeInsets.only(top: 12),
+        padding: const EdgeInsets.only(top: 12),
         child: Container(
           decoration: BoxDecoration(
               color: Colors.orange.shade100,

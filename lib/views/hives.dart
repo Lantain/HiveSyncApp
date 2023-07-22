@@ -37,7 +37,7 @@ class _HivesPage extends State<HivesPage> {
   void initState() {
     super.initState();
     futureHives = fetchHives();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ModalRoute.of(context)!.addScopedWillPopCallback(onRefresh);
     });
   }
@@ -54,7 +54,7 @@ class _HivesPage extends State<HivesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Le HIVES"),
+          title: const Text("My Hives"),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

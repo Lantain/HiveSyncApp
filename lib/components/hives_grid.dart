@@ -10,6 +10,13 @@ class HivesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (hives.isEmpty) {
+      return const Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [Text("You have no hives =("), Text("But you can add one!")],
+      );
+    }
     return Container(
         padding: const EdgeInsets.all(8),
         child: GridView.count(

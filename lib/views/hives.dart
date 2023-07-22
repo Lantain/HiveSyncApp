@@ -58,9 +58,11 @@ class _HivesPage extends State<HivesPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const AddHivePage(),
-            ));
+            Navigator.of(context)
+                .push(MaterialPageRoute(
+                  builder: (context) => const AddHivePage(),
+                ))
+                .then((value) => onRefresh());
           },
           child: const Icon(Icons.add),
         ),
@@ -74,9 +76,11 @@ class _HivesPage extends State<HivesPage> {
                     child: HivesList(
                       hives: snapshot.data!,
                       onSelect: (Hive hive) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => HivePage(hiveId: hive.name),
-                        ));
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(
+                              builder: (context) => HivePage(hiveId: hive.name),
+                            ))
+                            .then((value) => onRefresh());
                       },
                     ));
               } else if (snapshot.hasError) {

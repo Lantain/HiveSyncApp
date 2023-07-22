@@ -19,41 +19,98 @@ class HiveBriefCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rec = scanLastRecords(hive);
-    return SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          child: Row(
-            children: [
-              Card(
-                child: Container(
-                    padding: const EdgeInsets.all(4),
-                    width: 120,
-                    height: 160,
-                    child: Column(children: [
-                      const Text(
-                        "Temperature:",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text("${rec.temperature?.toStringAsFixed(1)}C")
-                    ])),
-              ),
-              Card(
-                child: Container(
-                    padding: const EdgeInsets.all(4),
-                    width: 120,
-                    height: 160,
-                    child: Column(children: [
-                      const Text(
-                        "Humidity:",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text("${rec.humidity?.toStringAsFixed(1)}%")
-                    ])),
-              )
-            ],
-          ),
-        ));
+    final isHot = rec.temperature! >= 30;
+    final isCold = rec.temperature! <= 10;
+
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(
+        width: 100,
+        padding: EdgeInsets.only(top: 32, bottom: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.thermostat),
+            Padding(padding: EdgeInsets.only(top: 4)),
+            Text("${rec.temperature?.toStringAsFixed(1)}°C")
+          ],
+        ),
+      ),
+      Container(
+        padding: EdgeInsets.only(top: 32, bottom: 16),
+        width: 100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.water_drop_outlined),
+            Padding(padding: EdgeInsets.only(top: 4)),
+            Text("${rec.humidity?.toStringAsFixed(1)}%")
+          ],
+        ),
+      ),
+      Container(
+        padding: EdgeInsets.only(top: 32, bottom: 16),
+        width: 100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.scale),
+            Padding(padding: EdgeInsets.only(top: 4)),
+            Text("0 kg")
+          ],
+        ),
+      ),
+    ]);
+    // Card(
+    //   color: isHot
+    //       ? Colors.deepOrange.shade200
+    //       : (isCold ? Colors.blue.shade200 : Colors.orange.shade100),
+    //   child: Container(
+    //       padding:
+    //           const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    //       width: 120,
+    //       height: 160,
+    //       child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             const Text(
+    //               "Temperature:",
+    //               style: TextStyle(fontWeight: FontWeight.bold),
+    //             ),
+    //             Text("${rec.temperature?.toStringAsFixed(1)}C")
+    //           ])),
+    // ),
+    // Card(
+    //   color: Colors.blue.shade50,
+    //   child: Container(
+    //       padding:
+    //           const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    //       width: 120,
+    //       height: 160,
+    //       child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             const Text(
+    //               "Humidity:",
+    //               style: TextStyle(fontWeight: FontWeight.bold),
+    //             ),
+    //             Text("${rec.humidity?.toStringAsFixed(1)}%")
+    //           ])),
+    // ),
+    // Card(
+    //   child: Container(
+    //       padding:
+    //           const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    //       width: 120,
+    //       height: 160,
+    //       child: const Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Text(
+    //               "Weight:",
+    //               style: TextStyle(fontWeight: FontWeight.bold),
+    //             ),
+    //             Text("Unknown kilos")
+    //           ])),
+    // )
   }
 }

@@ -21,6 +21,11 @@ Hive generateHive(id) {
         generateRecord(),
         generateRecord(),
         generateRecord(),
-        generateRecord()
+        generateRecord(),
+        generateRecord(),
+        generateRecord(),
+        generateRecord(),
+        generateRecord(),
+        generateRecord(),
       ]);
 }

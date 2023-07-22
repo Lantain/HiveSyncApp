@@ -37,13 +37,17 @@ class _HivesPage extends State<HivesPage> {
   void initState() {
     super.initState();
     futureHives = fetchHives();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      ModalRoute.of(context)!.addScopedWillPopCallback(onRefresh);
+    });
   }
 
-  Future onRefresh() async {
+  Future<bool> onRefresh() async {
     setState(() {
       futureHives = fetchHives();
     });
     await futureHives;
+    return true;
   }
 
   @override

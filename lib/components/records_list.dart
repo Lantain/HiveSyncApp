@@ -7,18 +7,25 @@ class RecordsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(8),
+    return SliverList.builder(
         itemCount: records.length,
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (context, index) {
           final record = records[index];
           return Card(
+              color: Colors.orange.shade50,
               child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(children: [Text("${record.createdAt ?? 'Unknown'}")]),
-          ));
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${record.createdAt ?? 'Unknown'}"),
+                      if (record.temperature != null)
+                        Text(
+                            "Temperature: ${record.temperature!.toStringAsFixed(1)}"),
+                      if (record.humidity != null)
+                        Text("Humidity: ${record.humidity!.toStringAsFixed(1)}")
+                    ]),
+              ));
         });
   }
 }

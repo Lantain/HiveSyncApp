@@ -39,7 +39,7 @@ class _RecordsList extends State<RecordsList> {
 
     final recs = await futureRecords;
     setState(() {
-      recordsData = recs;
+      recordsData.addAll(recs);
     });
   }
 
@@ -50,7 +50,7 @@ class _RecordsList extends State<RecordsList> {
         isInfiniteLoading = true;
         page = page + 1;
       });
-      recordsData.addAll(await fetchRecords(widget.hiveId, page, 0));
+      await onRefresh();
       Future.delayed(Duration.zero, () {
         setState(() {
           isInfiniteLoading = false;

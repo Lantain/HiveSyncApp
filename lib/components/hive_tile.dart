@@ -7,19 +7,8 @@ class HiveTile extends StatelessWidget {
   final Function onTap;
   const HiveTile({super.key, required this.hive, required this.onTap});
 
-  Record scanLastRecords() {
-    final record = Record(null, null, null);
-    for (var i = 0; i < hive.records.length; i++) {
-      var rec = hive.records[i];
-      record.temperature = record.temperature ?? rec.temperature;
-      record.humidity = record.humidity ?? rec.humidity;
-    }
-    return record;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final record = scanLastRecords();
     var lastSeenDate = DateTime.fromMillisecondsSinceEpoch(hive.lastSeenAt);
     Duration diff = DateTime.now().difference(lastSeenDate);
     final bool isOnline = diff.inMinutes < 10;
@@ -43,8 +32,8 @@ class HiveTile extends StatelessWidget {
                         : const Text(
                             style: TextStyle(color: Colors.redAccent),
                             "offline"),
-                    Text("Temp: ${record.temperature?.toStringAsFixed(1)}C"),
-                    Text("Hum: ${record.humidity?.toStringAsFixed(1)}%"),
+                    Text("Temp: ${hive.rec.temperature?.toStringAsFixed(1)}C"),
+                    Text("Hum: ${hive.rec.humidity?.toStringAsFixed(1)}%"),
                     const Text("$kilos kg"),
                     const Spacer(),
                   ]),

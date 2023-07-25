@@ -52,6 +52,7 @@ class HivePage extends StatefulHookWidget {
 
 class _HivePage extends State<HivePage> {
   late Future<Hive> futureHive;
+  int lastRefresh = 0;
   String? hiveName;
 
   @override
@@ -61,6 +62,9 @@ class _HivePage extends State<HivePage> {
   }
 
   Future onRefresh() async {
+    setState(() {
+      lastRefresh = DateTime.now().millisecondsSinceEpoch;
+    });
     futureHive = fetchHive(widget.hiveId);
     await futureHive;
   }
@@ -82,12 +86,14 @@ class _HivePage extends State<HivePage> {
             if (snapshot.hasData) {
               final lsa = DateTime.fromMillisecondsSinceEpoch(
                   snapshot.data!.lastSeenAt);
-
-              Future.delayed(Duration.zero, () {
-                setState(() {
-                  hiveName = snapshot.data?.name;
+              if (hiveName == null) {
+                Future.delayed(Duration.zero, () {
+                  setState(() {
+                    hiveName = snapshot.data?.name;
+                  });
                 });
-              });
+              }
+
               return RefreshIndicator(
                   onRefresh: onRefresh,
                   child: NotificationListener<ScrollNotification>(
@@ -149,7 +155,11 @@ class _HivePage extends State<HivePage> {
                                             horizontal: 8),
                                         width: double.infinity,
                                         child: HiveBriefCards(
-                                            hive: snapshot.data!))
+                                          temperature:
+                                              snapshot.data!.rec.temperature,
+                                          humidity: snapshot.data!.rec.humidity,
+                                          weight: snapshot.data!.rec.weight,
+                                        ))
                                   ],
                                 )),
                           ),
@@ -160,7 +170,10 @@ class _HivePage extends State<HivePage> {
                         ),
                         SliverPadding(
                           padding: const EdgeInsets.all(8),
-                          sliver: RecordsList(records: snapshot.data!.records),
+                          sliver: RecordsList(
+                            hiveId: widget.hiveId,
+                            key: Key(lastRefresh?.toString() ?? "0"),
+                          ),
                         )
                       ],
                     ),

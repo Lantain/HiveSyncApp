@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../data/model.dart';
-
 class HiveBriefCards extends StatelessWidget {
-  final Hive hive;
-  const HiveBriefCards({super.key, required this.hive});
+  final double? temperature;
+  final double? humidity;
+  final double? weight;
 
-  Record scanLastRecords(Hive hive) {
-    final record = Record(null, null, null);
-    for (var i = 0; i < hive.records.length; i++) {
-      var rec = hive.records[i];
-      record.temperature = record.temperature ?? rec.temperature;
-      record.humidity = record.humidity ?? rec.humidity;
-    }
-    return record;
-  }
+  const HiveBriefCards(
+      {super.key,
+      required this.temperature,
+      required this.humidity,
+      required this.weight});
 
   @override
   Widget build(BuildContext context) {
-    final rec = scanLastRecords(hive);
-    final isHot = rec.temperature! >= 30;
-    final isCold = rec.temperature! <= 10;
+    final isHot = temperature != null ? temperature! >= 30 : false;
+    final isCold = temperature != null ? temperature! <= 10 : false;
 
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       Container(
@@ -29,9 +23,12 @@ class HiveBriefCards extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.thermostat),
+            Icon(Icons.thermostat,
+                color: isHot
+                    ? Colors.deepOrange.shade200
+                    : (isCold ? Colors.blue.shade200 : Colors.black)),
             const Padding(padding: EdgeInsets.only(top: 4)),
-            Text("${rec.temperature?.toStringAsFixed(1)}°C")
+            Text("${temperature?.toStringAsFixed(1) ?? 'Unknown '}°C")
           ],
         ),
       ),
@@ -43,19 +40,19 @@ class HiveBriefCards extends StatelessWidget {
           children: [
             const Icon(Icons.water_drop_outlined),
             const Padding(padding: EdgeInsets.only(top: 4)),
-            Text("${rec.humidity?.toStringAsFixed(1)}%")
+            Text("${humidity?.toStringAsFixed(1) ?? 'Unknown '}%")
           ],
         ),
       ),
       Container(
         padding: const EdgeInsets.only(top: 32, bottom: 16),
         width: 100,
-        child: const Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.scale),
-            Padding(padding: EdgeInsets.only(top: 4)),
-            Text("0 kg")
+            const Icon(Icons.scale),
+            const Padding(padding: EdgeInsets.only(top: 4)),
+            Text("${weight?.toStringAsFixed(1) ?? 'Unknown'} kg")
           ],
         ),
       ),

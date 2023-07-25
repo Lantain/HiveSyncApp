@@ -1,7 +1,4 @@
 import 'dart:math';
-
-import 'package:hive_sync_app/data/mock/record.dart';
-
 import '../model.dart';
 
 Hive generateHive(id) {
@@ -13,19 +10,6 @@ Hive generateHive(id) {
       DateTime.now()
           .subtract(Duration(minutes: rng.nextInt(20)))
           .millisecondsSinceEpoch,
-      [
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-        generateRecord(),
-      ]);
+      HiveRecord(rng.nextDouble() * 100, rng.nextDouble() * 100,
+          rng.nextDouble() * 100));
 }

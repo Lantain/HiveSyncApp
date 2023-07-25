@@ -172,7 +172,8 @@ class _HivePage extends State<HivePage> {
                           padding: const EdgeInsets.all(8),
                           sliver: RecordsList(
                             hiveId: widget.hiveId,
-                            key: Key(lastRefresh?.toString() ?? "0"),
+                            key: Key(lastRefresh.toString()),
+                            scrollController: scrollController,
                           ),
                         )
                       ],

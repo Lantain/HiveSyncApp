@@ -90,9 +90,12 @@ class _HivePage extends State<HivePage> {
             ? FutureBuilder<Hive>(
                 future: futureHive,
                 builder: (context, snapshot) {
+                  final isWin =
+                      Theme.of(context).platform == TargetPlatform.windows;
+
                   const collapsedBarHeight = 56.0;
-                  const expandedBarHeight = 264.0;
-                  const diff = (expandedBarHeight - collapsedBarHeight);
+                  final expandedBarHeight = isWin ? 306.0 : 292.0;
+                  final diff = (expandedBarHeight - collapsedBarHeight);
                   if (snapshot.hasData) {
                     final lsa = DateTime.fromMillisecondsSinceEpoch(
                         snapshot.data!.lastSeenAt!);
@@ -131,7 +134,7 @@ class _HivePage extends State<HivePage> {
                                 stretchTriggerOffset: 100,
                                 flexibleSpace: FlexibleSpaceBar(
                                   background: Container(
-                                      padding: const EdgeInsets.only(top: 82),
+                                      padding: const EdgeInsets.only(top: 102),
                                       color: Colors.orange.shade50,
                                       child: Column(
                                         crossAxisAlignment:

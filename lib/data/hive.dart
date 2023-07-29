@@ -7,9 +7,9 @@ class HiveBrief {
     if (res == null) return null;
 
     final b = HiveBrief();
-    b.humidity = res['humidity'];
-    b.temperature = res['temperature'];
-    b.weight = res['weight'];
+    b.humidity = res['humidity'] + 0.0;
+    b.temperature = res['temperature'] + 0.0;
+    b.weight = (res['weight'] ?? 0) + 0.0;
     return b;
   }
 }

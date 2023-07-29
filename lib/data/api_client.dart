@@ -8,7 +8,8 @@ import 'record.dart';
 class ApiClient {
   static ApiClient? _instance;
   final dio = Dio(BaseOptions(
-      baseUrl: "http://192.168.50.214:2000", //?? "http://hs.lantain.org",
+      baseUrl:
+          "https://hs.lantain.org", // "http://192.168.50.214:2000", // "http://hs.lantain.org",
       responseType: ResponseType.json));
   String? authToken;
   Auth auth = Auth();

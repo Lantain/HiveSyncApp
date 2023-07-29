@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data/hive.dart';
 import '../data/model.dart';
 
 class HiveTile extends StatelessWidget {
@@ -9,7 +10,7 @@ class HiveTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var lastSeenDate = DateTime.fromMillisecondsSinceEpoch(hive.lastSeenAt);
+    var lastSeenDate = DateTime.fromMillisecondsSinceEpoch(hive.lastSeenAt!);
     Duration diff = DateTime.now().difference(lastSeenDate);
     final bool isOnline = diff.inMinutes < 10;
     const int kilos = 0;
@@ -22,7 +23,7 @@ class HiveTile extends StatelessWidget {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(hive.name,
+                    Text(hive.name!,
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     isOnline
@@ -32,8 +33,9 @@ class HiveTile extends StatelessWidget {
                         : const Text(
                             style: TextStyle(color: Colors.redAccent),
                             "offline"),
-                    Text("Temp: ${hive.rec.temperature?.toStringAsFixed(1)}C"),
-                    Text("Hum: ${hive.rec.humidity?.toStringAsFixed(1)}%"),
+                    Text(
+                        "Temp: ${hive.brief?.temperature?.toStringAsFixed(1)}C"),
+                    Text("Hum: ${hive.brief?.humidity?.toStringAsFixed(1)}%"),
                     const Text("$kilos kg"),
                     const Spacer(),
                   ]),

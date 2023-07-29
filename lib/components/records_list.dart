@@ -1,21 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_sync_app/data/mock/record.dart';
+import '../data/api_client.dart';
 import '../data/model.dart';
-
-Future<List<Record>> fetchRecords(hiveId, page, offset) async {
-  await Future.delayed(const Duration(seconds: 2));
-  return [
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-    generateRecord(),
-  ];
-}
+import '../data/record.dart';
 
 class RecordsList extends StatefulWidget {
   final String hiveId;
@@ -31,13 +18,27 @@ class _RecordsList extends State<RecordsList> {
   late Future<List<Record>> futureRecords;
   late List<Record> recordsData = [];
   int page = 1;
-  int count = 20;
+  int limit = 20;
   bool isInfiniteLoading = false;
 
+  Future<List<Record>> fetchRecords(hiveId, page, offset) async {
+    final api = await ApiClient.getInstance();
+    final records = await api.getRecords(hiveId, page, offset);
+    return records;
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future onRefresh() async {
-    futureRecords = fetchRecords(widget.hiveId, page, (page - 1) * count);
+    futureRecords = fetchRecords(widget.hiveId, limit, (page - 1) * limit);
 
     final recs = await futureRecords;
+
     setState(() {
       recordsData.addAll(recs);
     });
@@ -82,6 +83,8 @@ class _RecordsList extends State<RecordsList> {
               itemBuilder: (context, index) {
                 if (index < recordsData.length) {
                   final record = recordsData[index];
+                  final lsa =
+                      DateTime.fromMillisecondsSinceEpoch(record.createdAt!);
                   return Card(
                       color: Colors.orange.shade50,
                       child: Padding(
@@ -89,7 +92,7 @@ class _RecordsList extends State<RecordsList> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("${record.createdAt ?? 'Unknown'}"),
+                              Text("${lsa ?? 'Unknown'}"),
                               if (record.temperature != null)
                                 Text(
                                     "Temperature: ${record.temperature!.toStringAsFixed(1)}"),

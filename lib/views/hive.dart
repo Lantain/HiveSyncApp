@@ -5,10 +5,9 @@ import 'package:hive_sync_app/components/records_list.dart';
 import 'package:hive_sync_app/data/mock/hive.dart';
 import 'package:hive_sync_app/data/model.dart';
 
-Future<Hive> fetchHive(hiveId) async {
-  await Future.delayed(const Duration(seconds: 1));
-  return generateHive("sample");
-}
+import '../data/api_client.dart';
+import '../data/auth.dart';
+import '../data/hive.dart';
 
 class RecordsHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
@@ -54,18 +53,28 @@ class _HivePage extends State<HivePage> {
   late Future<Hive> futureHive;
   int lastRefresh = 0;
   String? hiveName;
+  ApiClient? api;
 
   @override
   void initState() {
     super.initState();
-    onRefresh();
+    initAsync();
+  }
+
+  Future<void> initAsync() async {
+    final a = await ApiClient.getInstance();
+    setState(() {
+      api = a;
+      futureHive = a.getHive(widget.hiveId);
+    });
   }
 
   Future onRefresh() async {
     setState(() {
       lastRefresh = DateTime.now().millisecondsSinceEpoch;
+      futureHive = api!.getHive(widget.hiveId);
     });
-    futureHive = fetchHive(widget.hiveId);
+
     await futureHive;
   }
 
@@ -77,114 +86,130 @@ class _HivePage extends State<HivePage> {
     return Scaffold(
       body: Container(
         color: Colors.orange.shade100,
-        child: FutureBuilder<Hive>(
-          future: futureHive,
-          builder: (context, snapshot) {
-            const collapsedBarHeight = 56.0;
-            const expandedBarHeight = 264.0;
-            const diff = (expandedBarHeight - collapsedBarHeight);
-            if (snapshot.hasData) {
-              final lsa = DateTime.fromMillisecondsSinceEpoch(
-                  snapshot.data!.lastSeenAt);
-              if (hiveName == null) {
-                Future.delayed(Duration.zero, () {
-                  setState(() {
-                    hiveName = snapshot.data?.name;
-                  });
-                });
-              }
+        child: api != null
+            ? FutureBuilder<Hive>(
+                future: futureHive,
+                builder: (context, snapshot) {
+                  const collapsedBarHeight = 56.0;
+                  const expandedBarHeight = 264.0;
+                  const diff = (expandedBarHeight - collapsedBarHeight);
+                  if (snapshot.hasData) {
+                    final lsa = DateTime.fromMillisecondsSinceEpoch(
+                        snapshot.data!.lastSeenAt!);
+                    if (hiveName == null) {
+                      Future.delayed(Duration.zero, () {
+                        setState(() {
+                          hiveName = snapshot.data?.name;
+                        });
+                      });
+                    }
 
-              return RefreshIndicator(
-                  onRefresh: onRefresh,
-                  child: NotificationListener<ScrollNotification>(
-                    onNotification: (notification) {
-                      isCollapsed.value = scrollController.hasClients &&
-                          scrollController.offset > diff;
-                      return false;
-                    },
-                    child: CustomScrollView(
-                      controller: scrollController,
-                      slivers: [
-                        SliverAppBar(
-                          title: AnimatedOpacity(
-                            duration: const Duration(milliseconds: 100),
-                            opacity: isCollapsed.value ? 1 : 0,
-                            child: Text(snapshot.data!.name),
-                          ),
-                          floating: true,
-                          pinned: true,
-                          expandedHeight: expandedBarHeight,
-                          collapsedHeight: collapsedBarHeight,
-                          backgroundColor: isCollapsed.value
-                              ? Colors.orange.shade200
-                              : Colors.orange.shade100,
-                          stretchTriggerOffset: 100,
-                          flexibleSpace: FlexibleSpaceBar(
-                            background: Container(
-                                padding: const EdgeInsets.only(top: 82),
-                                color: Colors.orange.shade50,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
+                    return RefreshIndicator(
+                        onRefresh: onRefresh,
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (notification) {
+                            isCollapsed.value = scrollController.hasClients &&
+                                scrollController.offset > diff;
+                            return false;
+                          },
+                          child: CustomScrollView(
+                            controller: scrollController,
+                            slivers: [
+                              SliverAppBar(
+                                title: AnimatedOpacity(
+                                  duration: const Duration(milliseconds: 100),
+                                  opacity: isCollapsed.value ? 1 : 0,
+                                  child: Text(snapshot.data!.name!),
+                                ),
+                                floating: true,
+                                pinned: true,
+                                expandedHeight: expandedBarHeight,
+                                collapsedHeight: collapsedBarHeight,
+                                backgroundColor: isCollapsed.value
+                                    ? Colors.orange.shade200
+                                    : Colors.orange.shade100,
+                                stretchTriggerOffset: 100,
+                                flexibleSpace: FlexibleSpaceBar(
+                                  background: Container(
+                                      padding: const EdgeInsets.only(top: 82),
+                                      color: Colors.orange.shade50,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 16),
-                                              child: AnimatedOpacity(
-                                                  opacity:
-                                                      isCollapsed.value ? 0 : 1,
-                                                  duration: const Duration(
-                                                      milliseconds: 100),
-                                                  child: Text(
-                                                      snapshot.data!.name,
-                                                      style: const TextStyle(
-                                                          fontSize: 32)))),
-                                          Text(snapshot.data!.id),
-                                          Text("Last Seen at $lsa"),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 16),
+                                                    child: AnimatedOpacity(
+                                                        opacity:
+                                                            isCollapsed
+                                                                    .value
+                                                                ? 0
+                                                                : 1,
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    100),
+                                                        child: Text(
+                                                            snapshot
+                                                                .data!.name!,
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        32)))),
+                                                Text(snapshot.data!.id!),
+                                                Text("Last Seen at $lsa"),
+                                              ],
+                                            ),
+                                          ),
+                                          if (snapshot.data?.brief != null)
+                                            Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8),
+                                                width: double.infinity,
+                                                child: HiveBriefCards(
+                                                  temperature: snapshot
+                                                      .data!.brief!.temperature,
+                                                  humidity: snapshot
+                                                      .data!.brief!.humidity,
+                                                  weight: snapshot
+                                                      .data!.brief!.weight,
+                                                ))
                                         ],
-                                      ),
-                                    ),
-                                    Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8),
-                                        width: double.infinity,
-                                        child: HiveBriefCards(
-                                          temperature:
-                                              snapshot.data!.rec.temperature,
-                                          humidity: snapshot.data!.rec.humidity,
-                                          weight: snapshot.data!.rec.weight,
-                                        ))
-                                  ],
-                                )),
+                                      )),
+                                ),
+                              ),
+                              SliverPersistentHeader(
+                                delegate: RecordsHeaderDelegate("Records"),
+                                pinned: true,
+                              ),
+                              SliverPadding(
+                                padding: const EdgeInsets.all(8),
+                                sliver: RecordsList(
+                                  hiveId: widget.hiveId,
+                                  key: Key(lastRefresh.toString()),
+                                  scrollController: scrollController,
+                                ),
+                              )
+                            ],
                           ),
-                        ),
-                        SliverPersistentHeader(
-                          delegate: RecordsHeaderDelegate("Records"),
-                          pinned: true,
-                        ),
-                        SliverPadding(
-                          padding: const EdgeInsets.all(8),
-                          sliver: RecordsList(
-                            hiveId: widget.hiveId,
-                            key: Key(lastRefresh.toString()),
-                            scrollController: scrollController,
-                          ),
-                        )
-                      ],
-                    ),
-                  ));
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
-            }
-            return const Center(child: CircularProgressIndicator());
-          },
-        ),
+                        ));
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              )
+            : const Center(child: CircularProgressIndicator()),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_sync_app/components/hive_tile.dart';
 
+import '../data/hive.dart';
 import '../data/model.dart';
 
 class HivesList extends StatelessWidget {
